@@ -1,4 +1,4 @@
 **/composer-logs/*
 **/crypto-config/*
-*.tx
-*.block
+**.tx
+**.block
