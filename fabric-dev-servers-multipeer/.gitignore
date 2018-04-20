@@ -1,3 +1,4 @@
 **/composer-logs/*
 **/crypto-config/*
-fabric-dev-servers-multipeer/composer/composer-*
+*.tx
+*.block
