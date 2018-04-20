@@ -1,6 +1,6 @@
 #!/bin/bash
  
- ../../bin/cryptogen generate --config=ccrypto-config.yaml
+ ../../bin/cryptogen generate --config=crypto-config.yaml
 
  export FABRIC_CFG_PATH=$PWD
 
