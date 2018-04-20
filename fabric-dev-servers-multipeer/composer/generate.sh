@@ -1,0 +1,8 @@
+#!/bin/bash
+ 
+ ../../bin/cryptogen generate --config=ccrypto-config.yaml
+
+ export FABRIC_CFG_PATH=$PWD
+
+ ../../bin/configtxgen -profile ComposerOrdererGenesis -outputBlock composer-genesis.block
+ ../../bin/configtxgen -profile ComposerChannel -outputCreateChannelTx composer-channel.tx -channelID composerchannel
