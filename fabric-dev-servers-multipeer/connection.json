@@ -1,0 +1,50 @@
+
+{
+    "name":"sqli-network",
+
+    "type":"hlfv1",
+
+    "orderers": [
+
+       { "url" : "grpc://10.41.24.236:7050" }
+    ],
+
+    "ca": { 
+
+        "url": "http://10.41.24.236:7054", 
+
+        "name": "ca.org1.example.com"
+
+    },
+
+    "peers": [
+
+        {
+
+            "requestURL": "grpc://10.41.24.236:7051",
+
+            "eventURL": "grpc://10.41.24.236:7053"
+
+        }, {
+
+            "requestURL": "grpc://10.41.24.236:8051",
+
+            "eventURL": "grpc://10.41.24.236:8053"
+
+        }, {
+
+            "requestURL": "grpc://10.41.24.170:9051",
+
+            "eventURL": "grpc://10.41.24.170:9053"
+
+        }
+
+    ],
+
+    "channel": "composerchannel",
+
+    "mspID": "Org1MSP",
+
+    "timeout": 300
+
+}

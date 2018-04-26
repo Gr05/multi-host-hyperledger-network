@@ -1,0 +1,43 @@
+/**
+ * Access control rules for tutorial-network
+ */
+rule SampleConditionalRule {
+    description: "Description of the ACL rule"
+    participant(m): "org.example.sqlinetwork.Citizen"
+    operation: READ, UPDATE
+    resource(v): "org.example.sqlinetwork.House"
+    condition: (v.homer.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule UpdateBalanceRule {
+    description: "Description of the ACL rule"
+    participant: "org.example.sqlinetwork.Citizen"
+    operation: CREATE, READ
+    resource: "org.example.sqlinetwork.UpdateBalance"
+    action: ALLOW
+}
+
+rule SIGADMIN {
+    description: "Allow all participants access to all resources"
+    participant: "org.example.sqlinetwork.Citizen#42"
+    operation: ALL
+    resource: "org.example.sqlinetwork.House"
+    action: ALLOW
+}
+
+rule Admin {
+    description: "Allow all participants access to all resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin#admin"
+    operation: ALL
+    resource: "org.example.sqlinetwork.*"
+    action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
