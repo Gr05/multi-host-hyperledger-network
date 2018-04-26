@@ -1,12 +1,21 @@
 /**
  * Access control rules for tutorial-network
  */
-rule SampleConditionalRule {
+rule HouseReadUpdateRule {
     description: "Description of the ACL rule"
     participant(m): "org.example.sqlinetwork.Citizen"
     operation: READ, UPDATE
     resource(v): "org.example.sqlinetwork.House"
     condition: (v.homer.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule CitizenReadRule {
+    description: "Description of the ACL rule"
+    participant(m): "org.example.sqlinetwork.Citizen"
+    operation: READ
+    resource(v): "org.example.sqlinetwork.Citizen"
+    condition: (v.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
 
