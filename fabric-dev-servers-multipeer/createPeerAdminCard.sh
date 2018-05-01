@@ -27,6 +27,9 @@ CERT="${DIR}"/composer/crypto-config/peerOrganizations/org1.example.com/users/Ad
 if composer card list -n PeerAdmin@sqli-network > /dev/null; then
     composer card delete -n PeerAdmin@sqli-network
 fi
+if composer card list -n admin@sqli-network > /dev/null; then
+    composer card delete -n admin@sqli-network
+fi
 composer card create -p ./connection.json -u PeerAdmin -c "${CERT}" -k "${PRIVATE_KEY}" -r PeerAdmin -r ChannelAdmin --file /tmp/PeerAdmin@sqli-network.card
 composer card import --file /tmp/PeerAdmin@sqli-network.card 
 
