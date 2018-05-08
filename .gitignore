@@ -1,2 +1,3 @@
 **/composer-logs/*
-**/cards/*
+**/chaincode-docker-devmode/*
+**/chaincode/dev_chaincode/dev_chaincode
