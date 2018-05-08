@@ -50,7 +50,7 @@ On your Raspi :
 You need to retag some of these images : 
 
 	pi$ docker tag jmotacek/fabric-ccenv:armv7l-1.0.7 hyperledger/fabric-ccenv:arm-1.0.7-snapshot-da14b6ba
-	pi$ docker tag jmotacek/fabric-baseos:armv7l-1.0.7 hyperledger/fabric-baseos:arm-0.3.2
+	pi$ docker tag jmotacek/fabric-baseos:armv7l-0.3.2 hyperledger/fabric-baseos:arm-0.3.2
 ## Init the Swarm on the linux and Join it as a manager with the raspi
 
 	$ docker swarm init
@@ -183,3 +183,26 @@ You should see `Query Result: 90`, because the first command line made a transac
 
 # NEXT 
 Congratulation you have very basic chaincode working on network you created between PC and Raspberry. The next step could be to script this all making a stacks or try to write his own chaincode and use it on the channel "mychannel".
+
+# The error you could face :
+### Bad retag : 
+> Error: Error endorsing chaincode: rpc error: code = Unknown desc =
+> Error starting container: Failed to generate platform-specific docker
+> build: Failed to pull
+> hyperledger/fabric-ccenv:arm-1.0.7-snapshot-da14b6ba: API error (404):
+> {"message":"manifest for
+> **hyperledger/fabric-ccenv:arm-1.0.7-snapshot-da14b6ba** not found"}
+>
+In my case I faced this error this it's why I retaged my image with this name. If you have the same problem but with a different name, retag you image using the right name in my case that was : 
+
+	pi$ docker tag jmotacek/fabric-ccenv:armv7l-1.0.7 hyperledger/fabric-ccenv:arm-1.0.7-snapshot-da14b6ba	 
+
+After this modification if you retry you could have this error : 
+
+> Error: Error endorsing chaincode: rpc error: code = Unknown desc =
+> Error starting container: manifest for
+> **hyperledger/fabric-baseos:arm-0.3.2** not found
+
+If you see this error it's the same than just above, retag your image :
+
+	pi$ docker tag jmotacek/fabric-baseos:armv7l-0.3.2 hyperledger/fabric-baseos:arm-0.3.2
