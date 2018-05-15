@@ -1,5 +1,5 @@
 ﻿# Multi-host-hyperledger-network
-
+In addittion of the Version 1.0, the chaincode is instantiated on peer0 directly within the script so you don't need to do it manually and the chaincode installed and instantiated is a chaincode call dev_chaincode which is more looking like the chaincode we want to use on final POC.
 ## Prerequist
 ###  On the linux 
 Install : 
@@ -26,8 +26,6 @@ Install :
 - [go](https://golang.org/dl/) Arch:linux/armv7 v1.10.1 or newer 
 - [Node.js](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) Arch:linux/armv7 v7.10.1 or newer
 - [Python](http://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html#python) Arch:linux/armv7 v2.7.9 or newer
-
-Authorize ssh connection on your raspi (By default authorized on raspberry pi 3)
 
 Search the name of your raspberry and is IP adress, for the Ip adress you can use `ifconfig`
 
@@ -130,61 +128,31 @@ In a second raspberry terminal run :
 In a last terminal on the raspberry run : 
 
 	pi$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
-	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/script.sh'
+	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/script.sh && ./scripts/useChaincode.sh'
+ 
 
 You should see the `--env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912` I spoke about on the two last commands. You can also remark that the docker images used are not the same (Because of the problem we talk about at the begining).
 
-### Instantiate the chaincode
-There is more risk to have bug during the instantiation of the chaincode on the peer1 (hosted buy the raspberry) the we will try on this one. On the terminal used to start the CLI, run this command : 
+### Understand what does useChaincode
+The command above should take approximatively 1 or 2 minutes depending on the raspberry, crating the chaincode container is quietly long on the raspi. 
+If you want you can look at what *useChaincode* does. Mostly I wrote the chaincode so that it populate with 3 Houses initialise with a balancePower amount to 0 for 2 of these three and 200 for "House1". So executing this script ***inside the cli*** you will : 
+- Query the ledger using the peer0  (the one hosted by the computer)
+- Make a "maj" invoke updating the "House1" by adding 10 credits using the peer0
+- Waiting 10 seconds to be sur that the modification is propagated to the peer1
+- Query the ledger again using peer1 (the one on the raspberry) to see the modifications
+
+For sur you can exec it lonely after this step runing : 
 
 	pi$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
-	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash 
+	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/useChaincode.sh'
 
-If there is no error, you should see something like this : 
-
-    root@0c8dacaeeba0:/opt/gopath/src/github.com/hyperledger/fabric/peer
-And then run : 
-
-	CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-	CORE_PEER_LOCALMSPID="Org1MSP"
-	CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-	CORE_PEER_ADDRESS=peer1.org1.example.com:7051
-	peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n mycc -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "OR ('Org1MSP.member','Org2MSP.member')"
-
-If there is no error, you should see a new container created on your raspberry using `docker ps` with a name looking like this : 
-
-	peer1.org1.example.com-peer1.org1.example.com-mycc-1.0-a5b0dac3d6f43166484914bf6652a7247e63d2caf7c999ff8f708f3e466721a3
-
-If there is no container like this, that's should mean that there is an error somewhere in the logs or maybe direclty shown on the cli logs. Please refer to the part dedicated from the possible error.
-
-### TEST Your chaincode 
-At this moment the chaincode is installed on both peers and instantiated only on the peer1. But you should be able to use it on each peer and i let you try do this.
-Still in the cli run :
-
-	CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-	CORE_PEER_LOCALMSPID="Org1MSP"
-	CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-	CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-	peer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
-
-This is only a query on the Peer0 to ask the value of 'a', you should see : `Query Result: 100`
-And also a new container created on your PC using `docker ps` looking like this :
-
-    peer0.org1.example.com-peer0.org1.example.com-mycc-1.0-2d219accebe7455911a539a51653cab28ed302fec2d7add1e1ec4e79f02a146f
-
-Because to execute chaincode the peer0 need to create his own chaincode container if it haven't it. This can work only if the chaincode is already installed on both peers and instantiated on at least one. If that doesn't work there is a big likelihood that is because instantiation failed on peer0.
-
-You can then try to make a transaction (On CLI) :
-
-	peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n mycc -c '{"Args":["invoke","a","b","10"]}'
-	peer chaincode query -C mychannel -n mycc -c '{"Args":["query","a"]}'
-
-You should see `Query Result: 90`, because the first command line made a transaction giving 10 from 'a' to 'b'. The invoke args depend on the chaincode and how you implemented it.
 
 # NEXT 
-Congratulation you have very basic chaincode working on network you created between PC and Raspberry. The next step could be to script this all making a stacks or try to write his own chaincode and use it on the channel "mychannel".
-
+For now we succeed to create our own network and our own chaincode. So the next step is probably to write a little *nodejs* application which use it.
 # The error you could face :
+
+Note that I tried to change the chaincode file, but that failed to install without changing the name of the chaincode or the version and when i tried to instantiate it, it still have ancient chaincode install and instantiate failed. So be careful about this.
+
 ### Bad retag : 
 > Error: Error endorsing chaincode: rpc error: code = Unknown desc =
 > Error starting container: Failed to generate platform-specific docker
