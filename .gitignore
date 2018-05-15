@@ -1,2 +1,5 @@
 **/composer-logs/*
+**/crypto-config/*
+**.tx
+**.block
 **/cards/*
