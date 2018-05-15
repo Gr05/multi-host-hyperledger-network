@@ -50,7 +50,7 @@ func InitLedger(stub shim.ChaincodeStubInterface) {
 	balance := []PowerBalance{
 		PowerBalance{Adress: "10 rue de la paix", Amount: 0},
 		PowerBalance{Adress: "12 route des jeunes", Amount: 200},
-		PowerBalance{Adress: "115 route de Thonon", Amount: 0},
+		PowerBalance{Adress: "115 route de thonon", Amount: 0},
 	}
 
 	i := 0
