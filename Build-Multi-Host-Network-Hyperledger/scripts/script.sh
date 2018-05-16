@@ -101,6 +101,8 @@ installChaincode () {
 	PEER=$1
 	setGlobals $PEER
 	peer chaincode install -n $CHAINCODE_NAME -v $CHAINCODE_VERSION -p github.com/hyperledger/fabric/examples/chaincode/go/dev_chaincode >&log.txt
+	peer chaincode install -n fabcar -v 1.0 -p github.com/hyperledger/fabric/examples/chaincode/go/fabcar >&log.txt
+	res=$?
 	res=$?
 	cat log.txt
         verifyResult $res "Chaincode installation on remote peer PEER$PEER has Failed"
@@ -114,6 +116,7 @@ instantiateChaincode () {
 	# while 'peer chaincode' command can get the orderer endpoint from the peer (if join was successful),
 	# lets supply it directly as we know it using the "-o" option
 	peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v $CHAINCODE_VERSION -c '{"Args":[]}' -P "OR	('Org1MSP.member','Org2MSP.member')" >&log.txt
+	peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n fabcar -v 1.0 -c '{"Args":[]}' -P "OR	('Org1MSP.member','Org2MSP.member')" >&log.txt
 	res=$?
 	cat log.txt
 	verifyResult $res "Chaincode instantiation on PEER$PEER on channel '$CHANNEL_NAME' failed"
