@@ -2,6 +2,6 @@
 **/chaincode-docker-devmode/*
 **/chaincode/dev_chaincode/dev_chaincode
 **/chaincode/fabcar
-**/basicApp/node_modules
-**/basicApp/hfc-key-store
-**/basicApp/package-lock.json
+**/node_modules
+**/hfc-key-store
+**/package-lock.json

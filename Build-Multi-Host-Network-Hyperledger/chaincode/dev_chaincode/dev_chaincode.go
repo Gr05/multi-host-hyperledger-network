@@ -60,11 +60,11 @@ func (t *SmartContract) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 
 // Create a power Balance
 func (t *SmartContract) create(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1")
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expecting 2")
 	}
 
-	var powerBalance = PowerBalance{Adress: args[0], Amount: 0}
+	var powerBalance = PowerBalance{Adress: args[1], Amount: 0}
 
 	balanceAsBytes, _ := json.Marshal(powerBalance)
 	stub.PutState(args[0], balanceAsBytes)

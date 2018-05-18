@@ -46,6 +46,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		throw new Error('Failed to get user1.... run registerUser.js');
 	}
 
+	
+
 	// queryCar chaincode function - requires 1 argument, ex: args: ['CAR4'],
 	// queryAllCars chaincode function - requires no arguments , ex: args: [''],
 	const request = {
@@ -61,7 +63,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	console.log("Query has completed, checking results");
 	// query_responses could have more than one  results if there multiple peers were used as targets
 	if (query_responses && query_responses.length != 0) {
-		for (var i = 0 ; i <= query_responses.length; i++){
+		for (var i = 0 ; i < query_responses.length; i++){
 			if (query_responses[0] instanceof Error) {
 				console.error("error from query = ", query_responses[0]);
 			} else {
