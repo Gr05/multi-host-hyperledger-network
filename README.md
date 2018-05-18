@@ -1,3 +1,4 @@
+
 ﻿# Multi-host-hyperledger-network
 In addittion of the Version 1.0, the chaincode is instantiated on peer0 directly within the script so you don't need to do it manually and the chaincode installed and instantiated is a chaincode call dev_chaincode which is more looking like the chaincode we want to use on final POC.
 ## Prerequist
@@ -38,12 +39,12 @@ Open 2 terminal and use one to connect your raspi in SSH:
 On your computer :
 
 	$ mkdir ~/hyperledger && cd ~/hyperledger
-	$ git clone https://github.com/Gr05/multi-host-hyperledger-network/ -b FabricApp-v1.0
+	$ git clone https://github.com/Gr05/multi-host-hyperledger-network/ -b FabricApp-v1.2
 	$ ./downloadx86_64Fabric.sh
 On your Raspi : 
 
 	pi$ mkdir ~/hyperledger && cd ~/hyperledger
-	pi$ git clone https://github.com/Gr05/multi-host-hyperledger-network/ -b FabricApp-v1.0
+	pi$ git clone https://github.com/Gr05/multi-host-hyperledger-network/ -b FabricApp-v1.2
 	pi$ ./downloadArmv7Fabric.sh
 You need to retag some of these images : 
 
@@ -146,9 +147,31 @@ For sur you can exec it lonely after this step runing :
 	pi$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
 	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/useChaincode.sh'
 
+# Run the MeteorApp
+
+Now you have your blockchain running so to query the House1 and the see the result of the `useChaincode.sh` script let's run our really basic Meteor App
+
+Open a new terminal (Yes the 8th !!) :
+
+	$ cd  ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp
+	$ npm install
+	$ meteor
+
+Then Open the file :
+
+> server/main.js
+
+and replace all the IP by yours ("10.41.24.170" raspi for me, "10.41.24.236" pc for me)
+You should now go on `localhost:3000` and look at the yellow square "état du compteur" see that the value is 210.
+
+If you use exec `useChaincode.sh` in the cli like explain just beside, the value should be updated to 220 when refreshing 
+
 
 # NEXT 
-For now we succeed to create our own network and our own chaincode. So the next step is probably to write a little *nodejs* application which use it.
+- Use event to render the update of the value no need refresh.
+- Improved use of the enroll admin and register user, maybe put buttons to be sure it's done on the good order to avoid crash.
+- Create some services to update the blockchain with the App
+
 # The error you could face :
 
 Note that I tried to change the chaincode file, but that failed to install without changing the name of the chaincode or the version and when i tried to instantiate it, it still have ancient chaincode install and instantiate failed. So be careful about this.
