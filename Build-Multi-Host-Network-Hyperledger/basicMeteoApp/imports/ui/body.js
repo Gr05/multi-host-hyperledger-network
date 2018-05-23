@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 
 import './body.html';
 import './energieDashboard.js';
+import './registerButton.js'
 
 Template.body.events({
     'click .opener'(event) {

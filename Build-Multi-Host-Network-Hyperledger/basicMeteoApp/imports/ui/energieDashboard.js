@@ -26,6 +26,19 @@ Template.energieDashboard.helpers({
     }
 });
 
+Template.energieDashboard.events({
+    'click .displayBalance': function (){
+        Meteor.call('queryChaincode', (err, res) => {
+            if (err){
+                alert(err)
+            }
+            else{
+                Session.set("counter", parseInt(res));
+            }
+        });
+    }
+})
+
 /*
 var event = contract.balanceMajed({}, function(error, result) {
     if (!error) {
