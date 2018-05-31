@@ -34,13 +34,17 @@ verifyResult () {
 setGlobals () {
 
 	if [ $1 -eq 0 -o $1 -eq 1 ] ; then
-		CORE_PEER_LOCALMSPID="Org1MSP"
-		CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-		CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 		if [ $1 -eq 0 ]; then
 			CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+			CORE_PEER_LOCALMSPID="Org1MSP"
+			CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+			CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 		else
-			CORE_PEER_ADDRESS=peer1.org1.example.com:7051
+			CORE_PEER_ADDRESS=peer0.org2.example.com:7051
+			CORE_PEER_LOCALMSPID="Org2MSP"
+			CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+			CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+
 		fi
 	fi
 
@@ -137,6 +141,8 @@ joinChannel
 ## Set the anchor peers for each org in the channel
 echo "Updating anchor peers for org1..."
 updateAnchorPeers 0
+echo "Updating anchor peers for org2..."
+updateAnchorPeers 1
 
 ## Install chaincode on Peer0/Org1 and Peer2/Org2
 echo "Installing chaincode on PC.."
@@ -146,7 +152,9 @@ installChaincode 1
 
 #Instantiate chaincode on Raspberry
 echo "Instantiating chaincode on org1/peer0..."
-instantiateChaincode 1
+instantiateChaincode 0
+#echo "Instantiating chaincode on org2/peer0..."
+#instantiateChaincode 1
 
 sleep 10
 echo

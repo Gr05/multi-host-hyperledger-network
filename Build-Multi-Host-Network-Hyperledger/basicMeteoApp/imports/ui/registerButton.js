@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
-import './registerButton.html'
+import './registerButton.html';
 
 Template.registerButton.events ({
     'click .enrollButton' : function(){

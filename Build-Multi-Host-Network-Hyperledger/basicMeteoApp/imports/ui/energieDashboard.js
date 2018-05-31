@@ -15,7 +15,9 @@ Template.energieDashboard.onCreated(function dashboardOnCreated(){
             alert(err)
         }
         else{
-            Session.set("counter", parseInt(res));
+            Session.set("counter", res.Production - res.Consumption);
+            Session.set("Prod", res.Production);
+            Session.set("Consume", res.Consumption);
         }
     });
 }); 
@@ -23,6 +25,12 @@ Template.energieDashboard.onCreated(function dashboardOnCreated(){
 Template.energieDashboard.helpers({
     counter: function(){
         return Session.get( "counter" );
+    },
+    prod: function(){
+        return Session.get( "Prod" );
+    },
+    consume: function(){
+        return Session.get( "Consume" );
     }
 });
 
@@ -33,11 +41,18 @@ Template.energieDashboard.events({
                 alert(err)
             }
             else{
-                Session.set("counter", parseInt(res));
+                Session.set("counter", res.Production - res.Consumption);
+                Session.set("Prod", res.Production);
+                Session.set("Consume", res.Consumption);
             }
         });
+    },
+
+    'click .display-config' : function(){
+        Meteor.call('displayConfig')
     }
 })
+
 
 /*
 var event = contract.balanceMajed({}, function(error, result) {

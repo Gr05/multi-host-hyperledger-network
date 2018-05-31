@@ -1,0 +1,26 @@
+<template name="historyTable">
+    <div class="w3-container">
+        <h5><b><i class="fa fa-history fa-fw"></i> Historique</b></h5>
+        <table class="w3-table w3-striped w3-bordered w3-border w3-hoverable w3-white">
+            <thead>
+                <tr class="w3-light-grey">
+                    <th>ID</th>
+                    <th>Adress</th>
+                    <th>Production</th>
+                    <th>Comsumption</th>
+                </tr>
+            </thead>
+        {{#each transactionHistory}}
+            <tr>{{> transactionLine}}</tr>
+        {{/each}}
+        </table>
+    </div>
+</template>
+
+<template name="transactionLine">
+    <td>{{txId}}</td>
+    <td>{{value.Adress}}</td>
+    <td>{{value.Production}}</td>
+    <td>{{value.Consumption}}</td>
+</template>
+
