@@ -1,4 +1,2 @@
 /* CSS declarations go here */
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-.w3-striped tr:nth-child(even){background-color:#f1f1f1}
-.w3-hoverable tr:hover,.w3-ul.w3-hoverable li:hover td{background-color:#ccc}
