@@ -5,7 +5,7 @@ import { Session } from 'meteor/session';
 import './historyTable.html';
 
 Template.historyTable.onCreated( function historyOnCreated(){
-    Meteor.call('getHistory', (err, res) => {
+    Meteor.call('getHistory', Session.get("house").toString(), (err, res) => {
         if (err){
             alert(err)
         }

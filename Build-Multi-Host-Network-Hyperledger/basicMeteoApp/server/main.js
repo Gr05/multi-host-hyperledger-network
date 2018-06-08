@@ -6,7 +6,7 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
-   queryChaincode(/*some args*/){
+   queryChaincode(house){
     var Fabric_Client = require('fabric-client');
     // 
     var fabric_client = new Fabric_Client();
@@ -19,7 +19,8 @@ Meteor.methods({
     channel.addPeer(peer2);
  
     //
-    var member_user = null;
+    //Cette variable est inutile 
+    //var member_user = null;
     var store_path = './hfc-key-store';
     console.log('Store path:'+store_path);
     var tx_id = null;
@@ -42,7 +43,7 @@ Meteor.methods({
     }).then((user_from_store) => {
       if (user_from_store && user_from_store.isEnrolled()) {
         console.log('Successfully loaded user1 from persistence');
-        member_user = user_from_store;
+        //member_user = user_from_store;
       } else {
         throw new Error('Failed to get user1.... run registerUser.js');
       }
@@ -55,7 +56,7 @@ Meteor.methods({
         //targets : --- letting this default to the peers assigned to the channel
         chaincodeId: 'mycc',
         fcn: 'query',
-        args: ['House1']
+        args: [house]
       };
 
       // send the query proposal to the peer
@@ -96,7 +97,7 @@ Meteor.methods({
     var fabric_client = new Fabric_Client();
     var fabric_ca_client = null;
     var admin_user = null;
-    var member_user = null;
+    //var member_user = null;
     var store_path ='./hfc-key-store';
     console.log(' Store path:'+store_path);
     
@@ -166,7 +167,7 @@ Meteor.methods({
     var fabric_client = new Fabric_Client();
     var fabric_ca_client = null;
     var admin_user = null;
-    var member_user = null;
+    //var member_user = null;
     var store_path = './hfc-key-store';
     console.log(' Store path:'+store_path);
     var promise =
@@ -210,9 +211,9 @@ Meteor.methods({
         cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
         });
     }).then((user) => {
-        member_user = user;
+        //member_user = user;
     
-        return fabric_client.setUserContext(member_user);
+        return fabric_client.setUserContext(user);
     }).then(()=>{
         console.log('User1 was successfully registered and enrolled and is ready to intreact with the fabric network');
     
@@ -226,7 +227,7 @@ Meteor.methods({
     return promise
   },
 
-  getHistory(/*some args*/){
+  getHistory(house){
     var Fabric_Client = require('fabric-client');
     // 
     var fabric_client = new Fabric_Client();
@@ -262,7 +263,7 @@ Meteor.methods({
     }).then((user_from_store) => {
       if (user_from_store && user_from_store.isEnrolled()) {
         console.log('Successfully loaded user1 from persistence');
-        member_user = user_from_store;
+        //member_user = user_from_store; 
       } else {
         throw new Error('Failed to get user1.... run registerUser.js');
       }
@@ -275,7 +276,7 @@ Meteor.methods({
         //targets : --- letting this default to the peers assigned to the channel
         chaincodeId: 'mycc',
         fcn: 'getHistory',
-        args: ['House1']
+        args: [house]
       };
 
       // send the query proposal to the peer

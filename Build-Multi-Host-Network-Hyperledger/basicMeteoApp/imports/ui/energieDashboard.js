@@ -9,8 +9,9 @@ import './energieDashboard.html';
  * Chaincode query
  */
 
-Template.energieDashboard.onCreated(function dashboardOnCreated(){
-    Meteor.call('queryChaincode', (err, res) => {
+Template.energieDashboard.onCreated(() => {
+
+    Meteor.call('queryChaincode', Session.get("house").toString() , (err, res) => {
         if (err){
             alert(err)
         }
@@ -36,7 +37,7 @@ Template.energieDashboard.helpers({
 
 Template.energieDashboard.events({
     'click .displayBalance': function (){
-        Meteor.call('queryChaincode', (err, res) => {
+        Meteor.call('queryChaincode', Session.get("house").toString(), (err, res) => {
             if (err){
                 alert(err)
             }

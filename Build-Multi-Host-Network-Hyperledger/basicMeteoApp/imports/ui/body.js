@@ -7,6 +7,13 @@ import './energieDashboard.js';
 import './registerButton.js';
 import './historyTable.js';
 
+Template.body.onCreated(() => {
+    Session.set("house", "House1");
+    Session.set("counter", 0);
+    Session.set("Prod", 0);
+    Session.set("Consume", 0);
+})
+
 Template.body.events({
     'click .opener'(event) {
         // Get the Sidebar
@@ -35,7 +42,7 @@ Template.body.events({
     },
 
     'click .updateHistory'(event){
-        Meteor.call('getHistory', (err, res) => {
+        Meteor.call('getHistory', Session.get("house").toString(), (err, res) => {
             if (err){
                 alert(err)
             } else {
