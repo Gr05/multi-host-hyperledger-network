@@ -7,6 +7,12 @@ import './energieDashboard.js';
 import './registerButton.js';
 import './historyTable.js';
 
+Template.body.helpers({
+    house: function(){
+        return Session.get( "house" );
+    }
+})
+
 Template.body.onCreated(() => {
     Session.set("house", "House1");
     Session.set("counter", 0);

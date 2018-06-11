@@ -21,7 +21,7 @@ Meteor.methods({
     //
     //Cette variable est inutile 
     //var member_user = null;
-    var store_path = './hfc-key-store';
+    var store_path = '/home/lguerry/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp/hfc-key-store';
     console.log('Store path:'+store_path);
     var tx_id = null;
 
@@ -98,7 +98,8 @@ Meteor.methods({
     var fabric_ca_client = null;
     var admin_user = null;
     //var member_user = null;
-    var store_path ='./hfc-key-store';
+    // store path = '$BASIC_METEOR_APP_DIR/.meteor/local/build/programs/server/hfc-key-store
+    var store_path = '/home/lguerry/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp/hfc-key-store';
     console.log(' Store path:'+store_path);
     
     var promise = 
@@ -168,7 +169,7 @@ Meteor.methods({
     var fabric_ca_client = null;
     var admin_user = null;
     //var member_user = null;
-    var store_path = './hfc-key-store';
+    var store_path = '/home/lguerry/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp/hfc-key-store';
     console.log(' Store path:'+store_path);
     var promise =
     // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
@@ -241,7 +242,7 @@ Meteor.methods({
  
     //
     var member_user = null;
-    var store_path = './hfc-key-store';
+    var store_path = '/home/lguerry/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp/hfc-key-store';
     console.log('Store path:'+store_path);
     var tx_id = null;
 
@@ -309,7 +310,7 @@ Meteor.methods({
     // 
     var fabric_client = new Fabric_Client();
 
-    var store_path = './hfc-key-store';
+    var store_path = '/home/lguerry/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp/hfc-key-store';
 
     // setup the fabric network
     var channel = fabric_client.newChannel('mychannel');

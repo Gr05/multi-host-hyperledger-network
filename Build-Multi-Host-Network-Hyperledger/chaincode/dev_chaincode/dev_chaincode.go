@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 
 	"math"
 
@@ -174,8 +175,9 @@ func (t *SmartContract) query(stub shim.ChaincodeStubInterface, args []string) p
 // ============================================================================================================================
 func (t *SmartContract) getHistory(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	type AuditHistory struct {
-		TxId  string       `json:"txId"`
-		Value PowerBalance `json:"value"`
+		TxId      string       `json:"txId"`
+		Value     PowerBalance `json:"value"`
+		Timestamp time.Time    `json:"timestamp"`
 	}
 	var history []AuditHistory
 	var balance PowerBalance
@@ -209,6 +211,7 @@ func (t *SmartContract) getHistory(stub shim.ChaincodeStubInterface, args []stri
 		// } else {
 		json.Unmarshal(historyData.Value, &balance) //un stringify it aka JSON.parse()
 		tx.Value = balance                          //copy marble over
+		tx.Timestamp = time.Unix(historyData.Timestamp.GetSeconds(), 0)
 		// }
 		history = append(history, tx) //add this tx to the list
 	}
