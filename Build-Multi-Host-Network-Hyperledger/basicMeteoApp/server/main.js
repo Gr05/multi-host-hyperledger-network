@@ -84,7 +84,7 @@ Meteor.methods({
     return promise
   },
 
-  enrollAdmin(){
+  enrollAdmin(caName, CAUrl, adminName, MSPName){
     'use strict';
     /*
     * Enroll the admin user
@@ -118,44 +118,44 @@ Meteor.methods({
           verify: false
         };
         // be sure to change the http to https when the CA is running TLS enabled
-        fabric_ca_client = new Fabric_CA_Client('http://10.41.24.236:7054', tlsOptions , 'ca1.example.com', crypto_suite);
+        fabric_ca_client = new Fabric_CA_Client(CAUrl, tlsOptions , caName, crypto_suite);
     
         // first check to see if the admin is already enrolled
-        return fabric_client.getUserContext('admin', true);
+        return fabric_client.getUserContext(adminName, true);
     }).then((user_from_store) => {
         if (user_from_store && user_from_store.isEnrolled()) {
-            console.log('Successfully loaded admin from persistence');
+            console.log('Successfully loaded ' + adminName + ' from persistence');
             admin_user = user_from_store;
             return null;
         } else {
             // need to enroll it with CA server
             return fabric_ca_client.enroll({
-              enrollmentID: 'admin',
-              enrollmentSecret: 'adminpw'
+              enrollmentID: adminName,
+              enrollmentSecret: 'adminpw',
             }).then((enrollment) => {
-              console.log('Successfully enrolled admin user "admin"');
+              console.log('Successfully enrolled admin user ' + adminName);
               return fabric_client.createUser(
-                  {username: 'admin',
-                      mspid: 'Org2MSP', 
+                  {username: adminName,
+                      mspid: MSPName, 
                       cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
                   });
             }).then((user) => {
               admin_user = user;
               return fabric_client.setUserContext(admin_user);
             }).catch((err) => {
-              console.error('Failed to enroll and persist admin. Error: ' + err.stack ? err.stack : err);
-              throw new Error('Failed to enroll admin');
+              console.error('Failed to enroll and persist' + adminName +  '. Error: ' + err.stack ? err.stack : err);
+              throw new Error('Failed to enroll ' + adminName);
             });
         }
     }).then(() => {
         console.log('Assigned the admin user to the fabric client ::' + admin_user.toString());
     }).catch((err) => {
-        console.error('Failed to enroll admin: ' + err);
+        console.error('Failed to enroll ' + adminName +  ': ' + err);
     });
     return promise
   },
 
-  registerUser(){
+  registerUser(caName, CAUrl, adminName, MSPName, userName){
     'use strict';
     /*
     * Register and Enroll a user
@@ -184,31 +184,31 @@ Meteor.methods({
         crypto_suite.setCryptoKeyStore(crypto_store);
         fabric_client.setCryptoSuite(crypto_suite);
         // be sure to change the http to https when the CA is running TLS enabled
-        fabric_ca_client = new Fabric_CA_Client('http://10.41.24.236:7054', null , '', crypto_suite);
+        fabric_ca_client = new Fabric_CA_Client(CAUrl, null , caName, crypto_suite);
     
         // first check to see if the admin is already enrolled
-        return fabric_client.getUserContext('admin', true);
+        return fabric_client.getUserContext(adminName, true);
     }).then((user_from_store) => {
         if (user_from_store && user_from_store.isEnrolled()) {
-            console.log('Successfully loaded admin from persistence');
+            console.log('Successfully loaded  ' + adminName + ' from persistence');
             admin_user = user_from_store;
         } else {
-            throw new Error('Failed to get admin.... run enrollAdmin.js');
+            throw new Error('Failed to get  ' + adminName + '.... run enrollAdmin.js');
         }
     
         // at this point we should have the admin user
         // first need to register the user with the CA server
-        return fabric_ca_client.register({enrollmentID: 'user1', affiliation: 'org1.department1', role: 'client'}, admin_user);
+        return fabric_ca_client.register({enrollmentID: userName, affiliation: 'org1.department1', role: 'client', caName: caName}, admin_user);
     }).then((secret) => {
         // next we need to enroll the user with CA server
-        console.log('Successfully registered user1 - secret:'+ secret);
+        console.log('Successfully registered  ' + userName + ' - secret:'+ secret);
     
-        return fabric_ca_client.enroll({enrollmentID: 'user1', enrollmentSecret: secret});
+        return fabric_ca_client.enroll({enrollmentID: userName, enrollmentSecret: secret});
     }).then((enrollment) => {
-      console.log('Successfully enrolled member user "user1" ');
+      console.log('Successfully enrolled member user " ' + userName + '" ');
       return fabric_client.createUser(
-        {username: 'user1',
-        mspid: 'Org1MSP',
+        {username: userName,
+        mspid: MSPName,
         cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
         });
     }).then((user) => {
@@ -216,12 +216,12 @@ Meteor.methods({
     
         return fabric_client.setUserContext(user);
     }).then(()=>{
-        console.log('User1 was successfully registered and enrolled and is ready to intreact with the fabric network');
+        console.log('' + userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network');
     
     }).catch((err) => {
         console.error('Failed to register: ' + err);
       if(err.toString().indexOf('Authorization') > -1) {
-        console.error('Authorization failures may be caused by having admin credentials from a previous CA instance.\n' +
+        console.error('Authorization failures may be caused by having  ' + adminName + ' credentials from a previous CA instance.\n' +
         'Try again after deleting the contents of the store directory '+store_path);
       }
     });
