@@ -82,15 +82,27 @@ on docker run on raspi (I'm not sure if you can change the number I didn't try t
 
 ## Start the Hyperledger network
 
-### Start the CA Server
+### Start the CA1 Server
 
 On a first Linux terminal : 
 
 	$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
-	$ docker run --rm -it --network="sqli-net" --name ca.example.com -p 7054:7054 -e FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server -e FABRIC_CA_SERVER_CA_NAME=ca.example.com -e FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem -e FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/cec0f280f7092174cc30b05bb78e2eb329862335ad5ed44a290f7eb623a49212_sk -v $(pwd)/crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyp-net hyperledger/fabric-ca:x86_64-1.0.4 sh -c 'fabric-ca-server start -b admin:adminpw -d'
+	$ docker run --rm -it --network="sqli-net" --name ca1.example.com -p 7054:7054 -e FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server -e FABRIC_CA_SERVER_CA_NAME=ca1.example.com -e FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem -e FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/6ed4a70403b7c903a13fc21fed1888b4ff7bf4ba8a86a8fcc1c30d0a82c8cad7_sk -v $(pwd)/crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net hyperledger/fabric-ca:x86_64-1.0.4 sh -c 'fabric-ca-server start -b adminOrg1:adminpw -d'
 
 If you regenerate your crypto tools you will need to change :
-`cec0f280f7092174cc30b05bb78e2eb329862335ad5ed44a290f7eb623a49212_sk`
+`6ed4a70403b7c903a13fc21fed1888b4ff7bf4ba8a86a8fcc1c30d0a82c8cad7_sk`
+by the new _sk file generated into :
+`crypto-config/peerOrganizations/org1.example.com/ca`
+
+### Start the CA2 Server
+
+On a first Linux terminal : 
+
+	$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
+	$ docker run --rm -it --network="sqli-net" --name ca2.example.com -p 8054:7054 -e FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server -e FABRIC_CA_SERVER_CA_NAME=ca2.example.com -e FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem -e FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/69046b7993bb2a6f578ee7a8d59cc16df7cc7788e1054496f1b46c7ae23402f9_sk -v $(pwd)/crypto-config/peerOrganizations/org2.example.com/ca/:/etc/hyperledger/fabric-ca-server-config -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net hyperledger/fabric-ca:x86_64-1.0.4 sh -c 'fabric-ca-server start -b adminOrg2:adminpw -d'
+
+If you regenerate your crypto tools you will need to change :
+`6ed4a70403b7c903a13fc21fed1888b4ff7bf4ba8a86a8fcc1c30d0a82c8cad7_sk`
 by the new _sk file generated into :
 `crypto-config/peerOrganizations/org1.example.com/ca`
 
@@ -123,13 +135,13 @@ In a ***raspberry terminal*** run :
 In a second raspberry terminal run : 
 
 	pi$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
-	pi$ docker run --rm -it --network="sqli-net" --link orderer.example.com:orderer.example.com --link peer0.org1.example.com:peer0.org1.example.com --name peer1.org1.example.com -p 9051:7051 -p 9053:7053 --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_LEDGER_STATE_STATEDATABASE=CouchDB -e CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984 -e CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME= -e CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD= -e CORE_PEER_ADDRESSAUTODETECT=true -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_NETWORKID=peer1.org1.example.com -e CORE_NEXT=true -e CORE_PEER_ENDORSER_ENABLED=true -e CORE_PEER_ID=peer1.org1.example.com -e CORE_PEER_PROFILE_ENABLED=true -e CORE_PEER_COMMITTER_LEDGER_ORDERER=orderer.example.com:7050 -e CORE_PEER_GOSSIP_ORGLEADER=true -e CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:7051 -e CORE_PEER_GOSSIP_IGNORESECURITY=true -e CORE_PEER_LOCALMSPID=Org1MSP -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net -e CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051 -e CORE_PEER_GOSSIP_USELEADERELECTION=false -e CORE_PEER_TLS_ENABLED=false -v /var/run/:/host/var/run/ -v $(pwd)/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp:/etc/hyperledger/fabric/msp -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-peer:armv7l-1.0.7 peer node start
+	pi$ docker run --rm -it --network="sqli-net" --link orderer.example.com:orderer.example.com --link peer0.org1.example.com:peer0.org1.example.com --name peer0.org2.example.com -p 9051:7051 -p 9053:7053 --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_LEDGER_STATE_STATEDATABASE=CouchDB -e CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984 -e CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME= -e CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD= -e CORE_PEER_ADDRESSAUTODETECT=true -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_NETWORKID=peer0.org2.example.com -e CORE_NEXT=true -e CORE_PEER_ENDORSER_ENABLED=true -e CORE_PEER_ID=peer0.org2.example.com -e CORE_PEER_PROFILE_ENABLED=true -e CORE_PEER_COMMITTER_LEDGER_ORDERER=orderer.example.com:7050 -e CORE_PEER_GOSSIP_ORGLEADER=true -e CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org2.example.com:7051 -e CORE_PEER_GOSSIP_IGNORESECURITY=true -e CORE_PEER_LOCALMSPID=Org2MSP -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net -e CORE_PEER_GOSSIP_USELEADERELECTION=false -e CORE_PEER_TLS_ENABLED=false -v /var/run/:/host/var/run/ -v $(pwd)/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/fabric/msp -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-peer:armv7l-1.0.7 peer node start
 
 ### Start the CLI on the Raspberry and install chaincode on both peers.
 In a last terminal on the raspberry run : 
 
 	pi$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
-	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/script.sh && ./scripts/useChaincode.sh'
+	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/script.sh && ./scripts/useChaincode.sh'
  
 
 You should see the `--env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912` I spoke about on the two last commands. You can also remark that the docker images used are not the same (Because of the problem we talk about at the begining).
@@ -145,7 +157,8 @@ If you want you can look at what *useChaincode* does. Mostly I wrote the chainco
 For sur you can exec it lonely after this step runing : 
 
 	pi$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/
-	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP --env CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/useChaincode.sh'
+	pi$ docker run --rm -it --network="sqli-net" --name cli -p 12051:7051 -p 12053:7053 -e GOPATH=/opt/gopath -e CORE_PEER_LOCALMSPID=Org1MSP -e CORE_PEER_TLS_ENABLED=false -e CORE_VM_DOCKER_HOSTCONFIG_MEMORY=536870912 -e CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock -e CORE_LOGGING_LEVEL=DEBUG -e CORE_PEER_ID=cli -e CORE_PEER_ADDRESS=peer0.org1.example.com:7051 -e CORE_PEER_NETWORKID=cli -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp -e CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=sqli-net  -v /var/run/:/host/var/run/ -v $(pwd)/chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go -v $(pwd)/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ -v $(pwd)/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/ -v $(pwd)/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts -w /opt/gopath/src/github.com/hyperledger/fabric/peer jmotacek/fabric-tools:armv7l-1.0.7 /bin/bash -c './scripts/useChaincode.sh'
+
 
 # Run the MeteorApp
 
@@ -157,14 +170,49 @@ Open a new terminal (Yes the 8th !!) :
 	$ npm install
 	$ meteor
 
+You have some modification to do before the App works with your config
 Then Open the file :
 
 > server/main.js
 
 and replace all the IP by yours ("10.41.24.170" raspi for me, "10.41.24.236" pc for me)
-You should now go on `localhost:3000` and look at the yellow square "état du compteur" see that the value is 210.
+You also have to change the IP by yours into 
 
-If you use exec `useChaincode.sh` in the cli like explain just beside, the value should be updated to 220 when refreshing 
+> basicApp/invoke.js
+> basicApp/invokepi.js
+
+At the line 18 : `var order = fabric_client.newOrderer('grpc://10.41.24.236:7050')`
+
+You should now go on `localhost:3000` and look at the yellow square "état du compteur" see that the value is 0 with error.
+
+Now you have to register user, so click on "EnrollAdmin Org1 Button" and then "Register user1" button. You should see appear logs telling that everything works well in meteor server log.
+
+Then the value should be updated to 3 when clicking on yellow square. 
+
+If you use exec `useChaincode.sh` in the cli like explain just beside, that will change the value in the Blockchain and then you can see what happen refreshing or clicking on the yellow square (because that refresh the values).
+You can also open a new terminal and do : 
+
+	$ cd ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicApp
+	$ node invoke.js
+	
+This script is the simulation of production for the house1 it use the identity you created just before and so there is nothing else to do to make it works.
+
+Don't try to execute the `invokepi.js` on you pc it is designed to be execute on raspberry.
+
+## Use the invokepi.js
+
+We didn't use the invokepi yet. But this one have to be executed on raspberry and so you have to create user2 and put the keys on the raspberry at the right place. follow the instruction to use it. 
+
+### Register the user to create files.
+
+On the Client WebApp, click "Enroll AdminOrg2" you should have CA2 running. Then click "Register User2"
+Now you have the key files created on `~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp`
+Copy paste it in your pi via scp:
+
+	$ scp -r ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp/hfc-key-store pi@[your pi Ip]:/home/pi/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicMeteoApp
+	$ scp -r ~/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicApp/invokepi.js pi@[your pi Ip]:/home/pi/hyperledger/multi-host-hyperledger-network/Build-Multi-Host-Network-Hyperledger/basicApp
+	
+Then go on you raspberry and execute the script. Everything should be OK.
 
 
 # NEXT 
